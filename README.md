@@ -1,21 +1,44 @@
+<div align="center">
+
 # Hermes Smith
 
-A meta-agent profile for [Hermes Agent](https://hermes-agent.nousresearch.com) that builds and routes agents from conversation.
+**Chat to build agents. Tasks route themselves.**
 
-Smith has two modes:
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/Platform-Hermes%20Agent-blueviolet.svg)](https://hermes-agent.nousresearch.com)
+[![Stars](https://img.shields.io/github/stars/zhuohoudeputao/hermes-smith?style=social)](https://github.com/zhuohoudeputao/hermes-smith)
+[![Last Commit](https://img.shields.io/github/last-commit/zhuohoudeputao/hermes-smith)](https://github.com/zhuohoudeputao/hermes-smith/commits)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/zhuohoudeputao/hermes-smith/pulls)
 
-1. **Interactive Profile Builder** — Chat with Smith to describe what kind of agent you need. It interviews you, designs the profile, creates it, configures it (model, tools, skills, personality), verifies it, and hands it off.
+A meta-agent profile for [Hermes Agent](https://hermes-agent.nousresearch.com) that builds agent profiles from conversation and routes Kanban tasks to the right agent — automatically.
 
-2. **Kanban Task Router** — When a Kanban task is created, Smith receives it first (as the default assignee), analyzes the task type, checks existing profiles, and routes the task to the best-fit agent — creating a new one if no suitable profile exists.
+</div>
 
-The core idea: instead of manually editing config files and installing skills for each new agent, you chat with Smith and it builds agents for you. And instead of manually assigning Kanban tasks to specific profiles, Smith acts as an intelligent router that learns which profiles handle which tasks.
+---
+
+## Why hermes-smith?
+
+Building a new AI agent usually means: editing YAML configs, cherry-picking toolsets, writing personality files, installing skills, and manually assigning every task to the right agent. **Smith eliminates all of that.**
+
+| Without Smith | With Smith |
+|---|---|
+| Hand-edit `config.yaml` for each agent | Describe what you want in chat — Smith builds it |
+| Guess which tools/skills to enable | Smith proposes the right config and verifies it |
+| Manually assign tasks to profiles | Tasks auto-route to the best-fit agent |
+| Duplicate effort across similar agents | Smith remembers profiles and reuses them |
+
+**Two modes, one agent:**
+
+1. **Interactive Profile Builder** — Chat with Smith. It interviews you, designs the profile, creates it, configures model/tools/skills/personality, verifies it works, and tells you how to use it.
+
+2. **Kanban Task Router** — When a task hits the board, Smith receives it first, analyzes the task type, checks existing profiles, and routes it to the best-fit agent — creating a new one only if no suitable profile exists.
 
 ## How It Works
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    User creates task                     │
-│              (hermes kanban create "...")                │
+│              (hermes kanban create "…")                  │
 └────────────────────────┬────────────────────────────────┘
                          │
                          ▼
@@ -57,13 +80,7 @@ The core idea: instead of manually editing config files and installing skills fo
               └──────────────────┘
 ```
 
-## Requirements
-
-- [Hermes Agent](https://hermes-agent.nousresearch.com) installed and configured
-- A working LLM provider (OpenRouter, Anthropic, OpenAI, etc.)
-- Hermes Kanban system (ships with Hermes, no extra install needed)
-
-## Quick Install
+## Quick Start
 
 ```bash
 git clone https://github.com/zhuohoudeputao/hermes-smith.git
@@ -71,47 +88,20 @@ cd hermes-smith
 bash install.sh
 ```
 
-The install script:
-1. Creates the `smith` profile by cloning your default profile
-2. Copies Smith's SOUL.md and the profile-smith skill into the new profile
-3. Configures Kanban routing (smith as default assignee, auto_decompose off)
-4. Verifies the installation
-
-After install, start chatting with Smith:
+Then start chatting:
 
 ```bash
 smith chat
+> I need a research assistant that can search the web and remember things
 ```
 
-## Manual Install
+The install script creates the `smith` profile (cloning your default), copies Smith's identity and skills, configures Kanban routing, and verifies everything.
 
-If you prefer to do it step by step:
+## Requirements
 
-```bash
-# 1. Create the smith profile (clones config, .env, and skills from default)
-hermes profile create smith --clone \
-  --description "Meta-agent that builds and routes Hermes profiles"
-
-# 2. Copy Smith's identity
-cp smith/SOUL.md ~/.hermes/profiles/smith/SOUL.md
-
-# 3. Copy the profile-smith skill
-mkdir -p ~/.hermes/profiles/smith/skills/profile-smith/references
-cp smith/skills/profile-smith/SKILL.md \
-   ~/.hermes/profiles/smith/skills/profile-smith/SKILL.md
-cp smith/skills/profile-smith/references/kanban-routing-details.md \
-   ~/.hermes/profiles/smith/skills/profile-smith/references/
-
-# 4. Configure Kanban routing
-hermes config set kanban.default_assignee smith
-hermes config set kanban.auto_decompose false
-hermes -p smith config set kanban.default_assignee smith
-hermes -p smith config set kanban.orchestrator_profile smith
-hermes -p smith config set kanban.auto_decompose false
-
-# 5. Verify
-hermes -p smith chat -q "What are you?"
-```
+- [Hermes Agent](https://hermes-agent.nousresearch.com) installed and configured
+- A working LLM provider (OpenRouter, Anthropic, OpenAI, etc.)
+- Hermes Kanban system (ships with Hermes — no extra install needed)
 
 ## Usage
 
@@ -154,16 +144,56 @@ Smith will:
 5. Reassign the task and leave a comment explaining the routing decision
 6. The dispatcher spawns the assigned profile to do the actual work
 
-### Common Profile Types Smith Can Build
+### Profile Types Smith Can Build
 
-| Task type | Tools | Example SOUL.md focus |
-|-----------|-------|----------------------|
+| Task type | Tools | Example focus |
+|-----------|-------|---------------|
 | Coding | terminal, file, code_execution | Clean code, test before done |
 | Research | web, browser, memory, vision | Cite sources, structured output |
 | Writing | web, file (no terminal) | Clarity, voice, audience-aware |
 | Automation | terminal, cronjob | Safety-first, verify before applying |
 | Data | terminal, file, code_execution, vision | Accuracy, visualization |
 | DevOps | terminal, file | Infrastructure as code |
+
+## Manual Install
+
+If you prefer step-by-step:
+
+```bash
+# 1. Create the smith profile (clones config, .env, and skills from default)
+hermes profile create smith --clone \
+  --description "Meta-agent that builds and routes Hermes profiles"
+
+# 2. Copy Smith's identity
+cp smith/SOUL.md ~/.hermes/profiles/smith/SOUL.md
+
+# 3. Copy the profile-smith skill
+mkdir -p ~/.hermes/profiles/smith/skills/profile-smith/references
+cp smith/skills/profile-smith/SKILL.md \
+   ~/.hermes/profiles/smith/skills/profile-smith/SKILL.md
+cp smith/skills/profile-smith/references/kanban-routing-details.md \
+   ~/.hermes/profiles/smith/skills/profile-smith/references/
+
+# 4. Configure Kanban routing
+hermes config set kanban.default_assignee smith
+hermes config set kanban.auto_decompose false
+hermes -p smith config set kanban.default_assignee smith
+hermes -p smith config set kanban.orchestrator_profile smith
+hermes -p smith config set kanban.auto_decompose false
+
+# 5. Verify
+hermes -p smith chat -q "What are you?"
+```
+
+## How Smith Learns
+
+Smith uses Hermes's persistent memory to remember which profiles it has created and what they're for. When a new task comes in:
+
+1. Smith checks its memory for profiles matching the task type
+2. If a match exists, it routes to that profile
+3. If no match exists, it creates a new profile and saves a memory note
+
+This means Smith gets better at routing over time — it won't create duplicate profiles, and it learns which profiles handle which tasks well.
 
 ## Repository Structure
 
@@ -194,26 +224,6 @@ kanban:
   auto_decompose: false         # Smith does routing, not the aux LLM
 ```
 
-To change them after install:
-
-```bash
-hermes config set kanban.default_assignee smith
-hermes config set kanban.auto_decompose false
-hermes -p smith config set kanban.default_assignee smith
-hermes -p smith config set kanban.orchestrator_profile smith
-hermes -p smith config set kanban.auto_decompose false
-```
-
-## How Smith Learns
-
-Smith uses Hermes's persistent memory to remember which profiles it has created and what they're for. When a new task comes in:
-
-1. Smith checks its memory for profiles matching the task type
-2. If a match exists, it routes to that profile
-3. If no match exists, it creates a new profile and saves a memory note
-
-This means Smith gets better at routing over time — it won't create duplicate profiles, and it learns which profiles handle which tasks well.
-
 ## Tested Workflow
 
 The full routing flow was tested end-to-end:
@@ -239,6 +249,10 @@ hermes config set kanban.default_assignee ''
 hermes config set kanban.auto_decompose true
 ```
 
+## Contributing
+
+Pull requests welcome! If you have ideas for new routing strategies, profile templates, or improvements to the install flow, open an issue or PR.
+
 ## License
 
-MIT
+[MIT](LICENSE)
