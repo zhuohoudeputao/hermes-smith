@@ -1,0 +1,182 @@
+# Skill Recommender
+# Maps task keywords to recommended Hermes skills and toolsets.
+# Smith uses this when building profiles or routing tasks.
+
+# Task type detection rules — checked in order, first match wins.
+task_types:
+  - type: coding
+    keywords:
+      - code
+      - function
+      - bug
+      - refactor
+      - test
+      - API
+      - implement
+      - debug
+      - compile
+      - build
+      - deploy
+      - PR
+      - pull request
+      - commit
+    recommended_tools: [terminal, file, code_execution]
+    recommended_skills:
+      - github-operations
+      - test-driven-development
+      - systematic-debugging
+      - codebase-inspection
+      - requesting-code-review
+    model_hint: "Use a strong coding model (e.g. claude-sonnet, deepseek-coder)"
+
+  - type: research
+    keywords:
+      - research
+      - search
+      - find
+      - compare
+      - analyze
+      - investigate
+      - literature
+      - survey
+      - benchmark
+    recommended_tools: [web, browser, memory, vision]
+    recommended_skills:
+      - arxiv
+      - blogwatcher
+      - llm-wiki
+    model_hint: "Can use a cheaper model — research is retrieval-heavy, not reasoning-heavy"
+
+  - type: writing
+    keywords:
+      - write
+      - blog
+      - article
+      - doc
+      - documentation
+      - content
+      - marketing
+      - copy
+      - newsletter
+      - post
+    recommended_tools: [web, file]
+    recommended_skills:
+      - humanizer
+      - youtube-content
+    model_hint: "Use a model with strong writing (e.g. claude, gpt-4o)"
+    disable_terminal: true
+
+  - type: devops
+    keywords:
+      - deploy
+      - CI/CD
+      - pipeline
+      - docker
+      - kubernetes
+      - k8s
+      - infrastructure
+      - terraform
+      - ansible
+      - monitoring
+      - server
+      - nginx
+      - systemd
+    recommended_tools: [terminal, file, cronjob]
+    recommended_skills:
+      - github-operations
+      - kanban
+    model_hint: "Use a reliable model — devops is safety-critical"
+
+  - type: data
+    keywords:
+      - data
+      - CSV
+      - pandas
+      - analysis
+      - visualization
+      - chart
+      - statistics
+      - SQL
+      - dataframe
+      - numpy
+    recommended_tools: [terminal, file, code_execution, vision]
+    recommended_skills:
+      - jupyter-live-kernel
+    model_hint: "Use a model with strong math/reasoning"
+
+  - type: automation
+    keywords:
+      - automate
+      - cron
+      - schedule
+      - monitor
+      - watchdog
+      - alert
+      - notify
+      - recurring
+    recommended_tools: [terminal, cronjob, file]
+    recommended_skills:
+      - kanban
+    model_hint: "Use a cheap model for simple monitoring; stronger for complex logic"
+
+  - type: creative
+    keywords:
+      - design
+      - image
+      - art
+      - video
+      - music
+      - diagram
+      - infographic
+      - animation
+      - sketch
+      - UI
+      - UX
+    recommended_tools: [image_gen, video, vision, file]
+    recommended_skills:
+      - claude-design
+      - ascii-art
+      - excalidraw
+      - architecture-diagram
+    model_hint: "Use a model with strong visual/multimodal capabilities"
+
+  - type: communication
+    keywords:
+      - email
+      - message
+      - telegram
+      - discord
+      - slack
+      - notify
+      - send
+      - report
+      - briefing
+    recommended_tools: [web, terminal, file]
+    recommended_skills:
+      - himalaya
+      - google-workspace
+    model_hint: "Use a model with strong writing and instruction-following"
+
+  - type: finance
+    keywords:
+      - money
+      - budget
+      - expense
+      - income
+      - transaction
+      - portfolio
+      - stock
+      - price
+      - gold
+      - wealth
+    recommended_tools: [terminal, file, code_execution, web]
+    recommended_skills:
+      - csv-wealth-tracker
+    model_hint: "Use a model with strong numerical reasoning. Never use floats for money."
+
+# Fallback when no type matches
+fallback:
+  type: general
+  recommended_tools: [terminal, file, web]
+  recommended_skills: []
+  model_hint: "Use the default model"

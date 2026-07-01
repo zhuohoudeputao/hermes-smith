@@ -267,7 +267,116 @@ When creating a profile that will receive routed tasks, make sure terminal and f
 
 ---
 
-## Quick Reference: Common Profile Types
+## Profile Templates Library
+
+Smith ships with pre-built profile templates for common roles. Instead of
+manually configuring each tool and skill, use a template:
+
+```bash
+# List available templates
+smith templates list
+# coder, researcher, writer, devops, data-analyst, monitor
+
+# Create a profile from a template
+smith create-from-template coder          # creates "coder" profile
+smith create-from-template researcher rx # creates "rx" profile from researcher template
+```
+
+Templates live in `smith/templates/profiles.yaml`. Each template defines:
+- **description** — for kanban routing
+- **toolsets** — which to enable/disable
+- **skills** — which skills to install
+- **soul** — the SOUL.md identity
+
+### Available Templates
+
+| Template | Tools | Skills | Best For |
+|----------|-------|--------|----------|
+| `coder` | terminal, file, code_execution, vision | github-operations, TDD, debugging, code-review | Writing/reviewing/refactoring code |
+| `researcher` | web, browser, memory, vision | arxiv, blogwatcher, llm-wiki | Web research, literature review |
+| `writer` | web, file (no terminal) | humanizer, youtube-content | Blog posts, docs, marketing |
+| `devops` | terminal, file, cronjob | github-operations, kanban | Deployments, CI/CD, infrastructure |
+| `data-analyst` | terminal, file, code_execution, vision | jupyter-live-kernel | Data analysis, visualization |
+| `monitor` | terminal, cronjob, web | kanban | Service monitoring, alerting |
+
+### Creating a Custom Template
+
+Add your own template to `smith/templates/profiles.yaml`:
+
+```yaml
+templates:
+  my-role:
+    description: "What this profile does"
+    model: inherit          # or specify a model
+    toolsets:
+      enable: [terminal, file, web]
+      disable: [image_gen, tts]
+    skills:
+      - some-skill
+    soul: |
+      # My Role
+      Instructions for this profile...
+```
+
+---
+
+## Skill Recommender
+
+When you describe a task, Smith recommends which skills and tools to install
+based on keyword matching. The recommender is in
+`smith/templates/skill-recommendations.yaml`.
+
+### How It Works
+
+1. Smith reads the task description
+2. Matches keywords against task type rules (coding, research, writing, etc.)
+3. Recommends tools, skills, and a model hint
+4. Presents the recommendation for your approval
+
+### Task Type Detection
+
+| Keywords | Type | Recommended Tools |
+|----------|------|-------------------|
+| code, function, bug, test, deploy | coding | terminal, file, code_execution |
+| research, search, compare, analyze | research | web, browser, memory, vision |
+| write, blog, doc, content, marketing | writing | web, file (no terminal) |
+| deploy, CI/CD, docker, kubernetes | devops | terminal, file, cronjob |
+| data, CSV, pandas, chart, SQL | data | terminal, file, code_execution, vision |
+| automate, cron, schedule, monitor | automation | terminal, cronjob, file |
+| design, image, art, video, UI | creative | image_gen, video, vision |
+| email, message, telegram, report | communication | web, terminal, file |
+| money, budget, expense, portfolio | finance | terminal, file, code_execution, web |
+
+---
+
+## Team Management
+
+Smith includes a team management skill for fleet overview and scaling.
+Load it with `skill_view("smith-team")` or it auto-loads when you say
+"team status", "scale up", "rebalance", etc.
+
+### Quick Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `smith team status` | Show all profiles with task counts and model |
+| `smith team scale coder --count 3` | Create coder-2, coder-3 instances |
+| `smith team archive writer` | Retire an idle profile (checks for 0 tasks first) |
+| `smith team rebalance` | Redistribute ready tasks to best-fit profiles |
+| `smith team analytics` | Per-profile productivity stats |
+
+### Scaling Rules
+
+- **Scale up**: profile has 3+ ready tasks AND tasks are independent
+- **Scale down**: profile has 0 tasks for 7+ days AND is not orchestrator
+- **Never scale** the orchestrator (smith) — only one instance
+- **Never delete** the default profile — it's the fallback
+
+---
+
+## Quick Reference: Creating Profiles Manually
+
+If you prefer not to use templates:
 
 ### Research Assistant
 ```bash

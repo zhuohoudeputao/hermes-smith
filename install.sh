@@ -57,13 +57,27 @@ echo "✓ SOUL.md copied"
 
 # ── Copy profile-smith skill ───────────────────────────────────────
 echo ""
-echo "── Copying profile-smith skill ─────────────────────"
+echo "── Copying skills ──────────────────────────────────"
 SKILL_DIR="${SMITH_PROFILE}/skills/profile-smith"
 mkdir -p "${SKILL_DIR}/references"
 cp "${SMITH_SRC}/skills/profile-smith/SKILL.md" "${SKILL_DIR}/SKILL.md"
 cp "${SMITH_SRC}/skills/profile-smith/references/kanban-routing-details.md" \
    "${SKILL_DIR}/references/kanban-routing-details.md" 2>/dev/null || true
-echo "✓ Skill copied"
+echo "✓ profile-smith skill copied"
+
+# ── Copy smith-team skill ──────────────────────────────────────────
+TEAM_DIR="${SMITH_PROFILE}/skills/smith-team"
+mkdir -p "${TEAM_DIR}"
+cp "${SMITH_SRC}/skills/smith-team/SKILL.md" "${TEAM_DIR}/SKILL.md" 2>/dev/null || true
+echo "✓ smith-team skill copied"
+
+# ── Copy templates ──────────────────────────────────────────────────
+echo ""
+echo "── Copying templates ───────────────────────────────"
+mkdir -p "${SMITH_PROFILE}/templates"
+cp "${SMITH_SRC}/templates/profiles.yaml" "${SMITH_PROFILE}/templates/profiles.yaml"
+cp "${SMITH_SRC}/templates/skill-recommendations.yaml" "${SMITH_PROFILE}/templates/skill-recommendations.yaml"
+echo "✓ Templates copied (6 profile templates + skill recommender)"
 
 # ── Copy profile.yaml ──────────────────────────────────────────────
 echo ""

@@ -27,11 +27,15 @@ Building a new AI agent usually means: editing YAML configs, cherry-picking tool
 | Manually assign tasks to profiles | Tasks auto-route to the best-fit agent |
 | Duplicate effort across similar agents | Smith remembers profiles and reuses them |
 
-**Two modes, one agent:**
+**Four modes, one agent:**
 
 1. **Interactive Profile Builder** — Chat with Smith. It interviews you, designs the profile, creates it, configures model/tools/skills/personality, verifies it works, and tells you how to use it.
 
 2. **Kanban Task Router** — When a task hits the board, Smith receives it first, analyzes the task type, checks existing profiles, and routes it to the best-fit agent — creating a new one only if no suitable profile exists.
+
+3. **Template Engine** — Start from pre-built profile templates (coder, researcher, writer, devops, data-analyst, monitor) instead of configuring from scratch. Customize or create your own templates.
+
+4. **Team Manager** — View your entire profile fleet at a glance. Scale up busy profiles, retire idle ones, rebalance tasks, and track productivity per profile.
 
 ## How It Works
 
@@ -144,6 +148,61 @@ Smith will:
 5. Reassign the task and leave a comment explaining the routing decision
 6. The dispatcher spawns the assigned profile to do the actual work
 
+### Template Mode — Create from Pre-built Templates
+
+```bash
+# List available templates
+smith chat -q "list templates"
+# → coder, researcher, writer, devops, data-analyst, monitor
+
+# Create a profile from a template
+smith chat -q "create a coder profile from template"
+# → Creates profile with pre-configured tools, skills, and SOUL.md
+
+# Or create with a custom name
+smith chat -q "create a researcher profile named rx from template"
+```
+
+| Template | Tools | Skills | Best For |
+|----------|-------|--------|----------|
+| `coder` | terminal, file, code_execution, vision | github-operations, TDD, debugging, code-review | Writing/reviewing/refactoring code |
+| `researcher` | web, browser, memory, vision | arxiv, blogwatcher, llm-wiki | Web research, literature review |
+| `writer` | web, file (no terminal) | humanizer, youtube-content | Blog posts, docs, marketing |
+| `devops` | terminal, file, cronjob | github-operations, kanban | Deployments, CI/CD, infrastructure |
+| `data-analyst` | terminal, file, code_execution, vision | jupyter-live-kernel | Data analysis, visualization |
+| `monitor` | terminal, cronjob, web | kanban | Service monitoring, alerting |
+
+### Team Manager Mode — Fleet Overview
+
+```bash
+# See all profiles and their workload
+smith chat -q "team status"
+# → Table showing each profile's task counts, model, and gateway status
+
+# Scale up a busy profile
+smith chat -q "scale coder to 3 instances"
+# → Creates coder-2, coder-3 with same config
+
+# Rebalance tasks across profiles
+smith chat -q "rebalance"
+# → Redistributes ready tasks to best-fit profiles
+
+# Retire an idle profile
+smith chat -q "archive writer"
+# → Checks for 0 tasks, then deletes
+```
+
+### Skill Recommender
+
+When you describe a task, Smith recommends which skills and tools to install:
+
+```bash
+smith chat -q "I need an agent to monitor GitHub issues and auto-assign them"
+# → Smith recommends: github-operations, kanban, codebase-inspection
+#   Tools: terminal, web, kanban
+#   Model: cheap/fast (routing, not coding)
+```
+
 ### Profile Types Smith Can Build
 
 | Task type | Tools | Example focus |
@@ -200,13 +259,18 @@ This means Smith gets better at routing over time — it won't create duplicate 
 ```
 hermes-smith/
 ├── smith/
-│   ├── SOUL.md                              # Smith's identity (two modes)
+│   ├── SOUL.md                              # Smith's identity (four modes)
 │   ├── profile.yaml                         # Profile metadata
-│   └── skills/
-│       └── profile-smith/
-│           ├── SKILL.md                     # Full workflow + routing logic
-│           └── references/
-│               └── kanban-routing-details.md # Command reference + test log
+│   ├── skills/
+│   │   └── profile-smith/
+│   │   │   ├── SKILL.md                     # Full workflow + routing logic
+│   │   │   └── references/
+│   │   │       └── kanban-routing-details.md # Command reference + test log
+│   │   └── smith-team/
+│   │       └── SKILL.md                     # Team management (fleet, scaling, analytics)
+│   └── templates/
+│       ├── profiles.yaml                    # 6 pre-built profile templates
+│       └── skill-recommendations.yaml       # Task-to-skill matching rules
 ├── install.sh                               # Automated install script
 ├── README.md
 ├── LICENSE
